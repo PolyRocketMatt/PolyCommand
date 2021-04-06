@@ -87,7 +87,7 @@
                     <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
                     <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
                     <includes><include>**/*</include></includes>
-                    <repositoryName>Rocket</repositoryName>      <!-- github repo name -->
+                    <repositoryName>PolyCommand</repositoryName>      <!-- github repo name -->
                     <repositoryOwner>PolyRocketMatt</repositoryOwner>    <!-- github username  -->
                 </configuration>
                 <executions>
