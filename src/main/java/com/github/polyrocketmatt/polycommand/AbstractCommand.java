@@ -16,7 +16,8 @@ public abstract class AbstractCommand {
      *
      * @param player the player that executed the command
      * @param args the arguments the player provided
+     * @param label the label that has been used to trigger the command
      */
-    public abstract void execute(@NotNull Player player, @NotNull String[] args);
+    public abstract void execute(@NotNull Player player, @NotNull String[] args, @NotNull String label);
 
 }

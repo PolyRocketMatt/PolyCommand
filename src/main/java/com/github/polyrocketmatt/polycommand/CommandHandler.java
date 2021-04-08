@@ -16,10 +16,12 @@ import java.util.*;
 public class CommandHandler implements CommandExecutor {
 
     private String prefix;
+    private String command;
     private Set<AbstractCommand> commands;
 
-    public CommandHandler(String prefix, AbstractCommand... commands) {
+    public CommandHandler(String prefix, String command, AbstractCommand... commands) {
         this.prefix = prefix;
+        this.command = command;
         this.commands = new HashSet<>(Arrays.asList(commands));
     }
 
@@ -28,8 +30,8 @@ public class CommandHandler implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (command.getName().equalsIgnoreCase("sierra"))
-                internalCommandDispatch(player, command, label, args);
+            if (command.getName().equalsIgnoreCase(this.command))
+                internalCommandDispatch(player, label, args);
 
             return true;
         }
@@ -43,12 +45,11 @@ public class CommandHandler implements CommandExecutor {
      * Handle commands dispatched by players.
      *
      * @param player the player
-     * @param command the command
      * @param label the label
      * @param args the arguments
      * @throws CommandException if the command was not found
      */
-    private void internalCommandDispatch(Player player, Command command, String label, String[] args) throws CommandException {
+    private void internalCommandDispatch(Player player, String label, String[] args) throws CommandException {
         if (args.length == 0) {
             player.sendMessage(prefix + ChatColor.YELLOW + "[s] " + ChatColor.GRAY + " = Alphanumeric");
             player.sendMessage(prefix + ChatColor.YELLOW + "[b] " + ChatColor.GRAY + " = True | False");
@@ -61,6 +62,8 @@ public class CommandHandler implements CommandExecutor {
                 CommandInfo info = cmd.getClass().getAnnotation(CommandInfo.class);
                 builder.append(prefix)
                         .append(ChatColor.GRAY)
+                        .append(label)
+                        .append(" ")
                         .append(info.name())
                         .append(" ")
                         .append(info.arguments())
@@ -88,7 +91,7 @@ public class CommandHandler implements CommandExecutor {
                 List<String> arguments = new ArrayList<>(Arrays.asList(args));
 
                 arguments.remove(0);
-                cmd.execute(player, arguments.toArray(new String[arguments.size()]));
+                cmd.execute(player, arguments.toArray(new String[arguments.size()]), label);
 
                 return;
             }
