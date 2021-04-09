@@ -25,6 +25,14 @@ public class CommandHandler implements CommandExecutor {
         this.commands = new HashSet<>(Arrays.asList(commands));
     }
 
+    public Set<AbstractCommand> getCommands() {
+        return commands;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player) {
@@ -51,9 +59,9 @@ public class CommandHandler implements CommandExecutor {
      */
     private void internalCommandDispatch(Player player, String label, String[] args) throws CommandException {
         if (args.length == 0) {
-            player.sendMessage(prefix + ChatColor.YELLOW + "[s] " + ChatColor.GRAY + " = Alphanumeric");
-            player.sendMessage(prefix + ChatColor.YELLOW + "[b] " + ChatColor.GRAY + " = True | False");
-            player.sendMessage(prefix + ChatColor.YELLOW + "[i] " + ChatColor.GRAY + " = Number");
+            player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[s] " + ChatColor.GRAY + " = Alphanumeric"));
+            player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[b] " + ChatColor.GRAY + " = True | False"));
+            player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[i] " + ChatColor.GRAY + " = Number"));
             player.sendMessage(prefix + "\n");
 
             for (AbstractCommand cmd : commands) {
@@ -72,7 +80,7 @@ public class CommandHandler implements CommandExecutor {
                         .append(" [")
                         .append(info.permission())
                         .append("]");
-                player.sendMessage(builder.toString());
+                player.sendMessage(Utils.translate(builder.toString()));
             }
 
             return;
@@ -82,8 +90,7 @@ public class CommandHandler implements CommandExecutor {
                 .stream()
                 .filter(filterCmd -> filterCmd.getClass().getAnnotation(CommandInfo.class).name().equalsIgnoreCase(args[0]))
                 .findAny()
-                .orElseThrow(() -> new CommandException(player.getName() + " tried executing a command \"" + args[0] + "\" that does not exist"));
-
+                .orElse(null);
         if (cmd != null) {
             CommandInfo info = cmd.getClass().getAnnotation(CommandInfo.class);
 
@@ -96,9 +103,34 @@ public class CommandHandler implements CommandExecutor {
                 return;
             }
 
-            player.sendMessage(prefix + ChatColor.RED + "Oops! You do not have the permission to do that");
-        }
+            player.sendMessage(Utils.translate(prefix + ChatColor.RED + "Oops! You do not have the permission to do that"));
+        } else {
+            player.sendMessage(Utils.translate(prefix  + ChatColor.RED + "That command does not exist!"));
+            player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[s] " + ChatColor.GRAY + " = Alphanumeric"));
+            player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[b] " + ChatColor.GRAY + " = True | False"));
+            player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[i] " + ChatColor.GRAY + " = Number"));
+            player.sendMessage("\n");
 
-        player.sendMessage(prefix  + ChatColor.RED + "That command does not exist!");
+            for (AbstractCommand acmd : commands) {
+                StringBuilder builder = new StringBuilder();
+
+                CommandInfo info = acmd.getClass().getAnnotation(CommandInfo.class);
+                builder.append(prefix)
+                        .append(ChatColor.GRAY)
+                        .append(label)
+                        .append(" ")
+                        .append(info.name())
+                        .append(" ")
+                        .append(info.arguments())
+                        .append(" - ")
+                        .append(info.description())
+                        .append(" [")
+                        .append(info.permission())
+                        .append("]");
+                player.sendMessage(Utils.translate(builder.toString()));
+            }
+
+            return;
+        }
     }
 }
