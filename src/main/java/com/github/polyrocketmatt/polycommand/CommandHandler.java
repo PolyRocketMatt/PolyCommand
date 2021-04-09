@@ -62,7 +62,7 @@ public class CommandHandler implements CommandExecutor {
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[s] " + ChatColor.GRAY + " = Alphanumeric"));
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[b] " + ChatColor.GRAY + " = True | False"));
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[i] " + ChatColor.GRAY + " = Number"));
-            player.sendMessage(prefix + "\n");
+            player.sendMessage("\n");
 
             for (AbstractCommand cmd : commands) {
                 StringBuilder builder = new StringBuilder();

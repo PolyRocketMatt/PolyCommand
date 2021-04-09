@@ -6,7 +6,7 @@
 
     <groupId>com.github.polyrocketmatt.polycommand</groupId>
     <artifactId>PolyCommand</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
 
     <properties>
         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
