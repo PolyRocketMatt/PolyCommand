@@ -3,10 +3,10 @@
   <groupId>com.github.polyrocketmatt.polycommand</groupId>
   <artifactId>PolyCommand</artifactId>
   <versioning>
-    <release>1.3</release>
+    <release>1.4</release>
     <versions>
-      <version>1.3</version>
+      <version>1.4</version>
     </versions>
-    <lastUpdated>20210409203039</lastUpdated>
+    <lastUpdated>20210409203902</lastUpdated>
   </versioning>
 </metadata>
