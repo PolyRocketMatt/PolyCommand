@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 public class Utils {
 
     public static String translate(String message) {
-        return ChatColor.translateAlternateColorCodes('§', message);
+        return ChatColor.translateAlternateColorCodes("§".toCharArray()[0], message);
     }
 
 }
