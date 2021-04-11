@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by PolyRocketMatt on 06/04/2021.
+ * Provide basic information for an {@link AbstractCommand}.
  *
- * Provide basic information for an {@code AbstractCommand}.
+ * Created by PolyRocketMatt on 06/04/2021.
  */
 
 @Retention(RetentionPolicy.RUNTIME)

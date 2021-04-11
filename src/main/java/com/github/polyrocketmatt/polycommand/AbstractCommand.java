@@ -4,9 +4,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by PolyRocketMatt on 11/03/2021.
+ * Represents a subcommand.
  *
- * Represents a command that is part of Sierra.
+ * Created by PolyRocketMatt on 11/03/2021.
  */
 
 public abstract class AbstractCommand {
