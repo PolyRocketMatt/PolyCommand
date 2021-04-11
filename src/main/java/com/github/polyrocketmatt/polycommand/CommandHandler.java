@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -15,21 +16,21 @@ import java.util.*;
 
 public class CommandHandler implements CommandExecutor {
 
-    private String prefix;
-    private String command;
-    private Set<AbstractCommand> commands;
+    private @NotNull String prefix;
+    private @NotNull String command;
+    private @NotNull Set<AbstractCommand> commands;
 
-    public CommandHandler(String prefix, String command, AbstractCommand... commands) {
+    public CommandHandler(@NotNull String prefix, @NotNull String command, @NotNull AbstractCommand... commands) {
         this.prefix = prefix;
         this.command = command;
         this.commands = new HashSet<>(Arrays.asList(commands));
     }
 
-    public Set<AbstractCommand> getCommands() {
+    public @NotNull Set<AbstractCommand> getCommands() {
         return commands;
     }
 
-    public String getCommand() {
+    public @NotNull String getCommand() {
         return command;
     }
 
@@ -53,11 +54,11 @@ public class CommandHandler implements CommandExecutor {
      * Handle commands dispatched by players.
      *
      * @param player the player
-     * @param label the label
-     * @param args the arguments
+     * @param label  the label
+     * @param args   the arguments
      * @throws CommandException if the command was not found
      */
-    private void internalCommandDispatch(Player player, String label, String[] args) throws CommandException {
+    private void internalCommandDispatch(@NotNull Player player, @NotNull String label, @NotNull String[] args) throws CommandException {
         if (args.length == 0) {
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[s] " + ChatColor.GRAY + " = Alphanumeric"));
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[b] " + ChatColor.GRAY + " = True | False"));
@@ -86,7 +87,7 @@ public class CommandHandler implements CommandExecutor {
             return;
         }
 
-        AbstractCommand cmd = commands
+        @Nullable AbstractCommand cmd = commands
                 .stream()
                 .filter(filterCmd -> filterCmd.getClass().getAnnotation(CommandInfo.class).name().equalsIgnoreCase(args[0]))
                 .findAny()
@@ -105,7 +106,7 @@ public class CommandHandler implements CommandExecutor {
 
             player.sendMessage(Utils.translate(prefix + ChatColor.RED + "Oops! You do not have the permission to do that"));
         } else {
-            player.sendMessage(Utils.translate(prefix  + ChatColor.RED + "That command does not exist!"));
+            player.sendMessage(Utils.translate(prefix + ChatColor.RED + "That command does not exist!"));
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[s] " + ChatColor.GRAY + " = Alphanumeric"));
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[b] " + ChatColor.GRAY + " = True | False"));
             player.sendMessage(Utils.translate(prefix + ChatColor.YELLOW + "[i] " + ChatColor.GRAY + " = Number"));
