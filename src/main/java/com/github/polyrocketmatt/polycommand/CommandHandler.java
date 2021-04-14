@@ -13,11 +13,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- *
  * General use CommandHandler used to dispatch subcommands of a main command in an orderly fashion.
  * There may only exist one {@code CommandHandler} per base command.
  * <p>
- *
+ * <p>
  * Created by PolyRocketMatt on 06/04/2021.
  * Adapted by Mmaarten on 11/04/2021.
  */
@@ -26,7 +25,7 @@ public class CommandHandler implements TabExecutor {
 
     private final @NotNull String prefix;
 
-    private final @NotNull Set<AbstractCommand> commands;
+    private final @NotNull List<AbstractCommand> commands;
 
     private @NotNull String PLAYER_ONLY = "&4Only players can execute commands!";
     private @NotNull String NOT_A_COMMAND = "&4That command does not exist!";
@@ -34,18 +33,22 @@ public class CommandHandler implements TabExecutor {
     private @Nullable String PLUGIN_DESCRIPTION = null;
     private @NotNull String COMMAND_HELP_PATTERN = "%prefix% &7/%label% %name% %args% - %desc% [%perm%]";
     private @Nullable String COMMAND_HELP_HEADER =
+            "%prefix% &eHELP MENU &7page: &e%page%\n" +
             "%prefix% &e[s] &7= Alphanumeric\n" +
                     "%prefix% &e[b] &7= True | False\n" +
                     "%prefix% &e[i] &7= Number";
+    private boolean PRINT_HELP_WHEN_NOT_A_COMMAND = false;
+    private int CMDS_PER_PAGE = 5;
 
     /**
      * Create a new {@code CommandHandler} instance.
-     * @param prefix the prefix used when reporting errors or help menus to the player
+     *
+     * @param prefix   the prefix used when reporting errors or help menus to the player
      * @param commands a collection of {@link AbstractCommand}s that this {@code CommandHandler} is handling
      */
     public CommandHandler(@NotNull String prefix, @NotNull AbstractCommand... commands) {
         this.prefix = prefix;
-        this.commands = new HashSet<>(Arrays.asList(commands));
+        this.commands = new ArrayList<>(Arrays.asList(commands));
     }
 
     /**
@@ -90,6 +93,7 @@ public class CommandHandler implements TabExecutor {
 
     /**
      * Removes an {@link AbstractCommand} from this {@code CommandHandler}.
+     *
      * @param command the {@link AbstractCommand} to be removed from this {@code CommandHandler}
      * @return this {@code CommandHandler}
      * @throws CommandException if a command with the given {@link CommandInfo#name()} is not handled by this {@code CommandHandler}
@@ -105,6 +109,7 @@ public class CommandHandler implements TabExecutor {
      * Sets the message to display to the {@link CommandExecutor} if they are not a {@link Player}.
      * Default minecraft color codes can be used through the use of the '&amp;' char. <br>
      * Default: &amp;4Only players can execute commands!
+     *
      * @param message the message to display to non-player CommandSenders
      * @return this {@code CommandHandler}
      */
@@ -118,6 +123,7 @@ public class CommandHandler implements TabExecutor {
      * that is not being handled by this {@link CommandHandler}.
      * Default minecraft color codes can be used through the use of the '&amp;' char. <br>
      * Default: &amp;4That command does not exist!
+     *
      * @param message the message to display when entering an incorrect subcommand
      * @return this {@code CommandHandler}
      */
@@ -131,6 +137,7 @@ public class CommandHandler implements TabExecutor {
      * the {@link CommandInfo#permission()} node for this command.
      * Default minecraft color codes can be used through the use of the '&amp;' char. <br>
      * Default: &amp;4Oops! You do not have the permission to do that!
+     *
      * @param message the message to display when missing permission
      * @return this {@code CommandHandler}
      */
@@ -143,6 +150,7 @@ public class CommandHandler implements TabExecutor {
      * Adds a plugin description to display when the base command is used without any arguments.
      * If set to {@code null}, the help menu will be printed instead.
      * Default minecraft color codes can be used through the use of the '&amp;' char. <br>
+     *
      * @param description the message to display
      */
     public void withPluginDescription(String description) {
@@ -152,11 +160,11 @@ public class CommandHandler implements TabExecutor {
     /**
      * Sets the pattern used when the help menu is displayed.
      * The following placeholders are available: <br>
-     *   {@code %label%} -> The command label the player used <br>
-     *   {@code %name%} -> The {@link CommandInfo#name()} of the command <br>
-     *   {@code %args%} -> The {@link CommandInfo#arguments()} of the command <br>
-     *   {@code %desc%} -> The {@link CommandInfo#description()} of the command <br>
-     *   {@code %perm%} -> The {@link CommandInfo#permission()} node of the command <br>
+     * {@code %label%} -> The command label the player used <br>
+     * {@code %name%} -> The {@link CommandInfo#name()} of the command <br>
+     * {@code %args%} -> The {@link CommandInfo#arguments()} of the command <br>
+     * {@code %desc%} -> The {@link CommandInfo#description()} of the command <br>
+     * {@code %perm%} -> The {@link CommandInfo#permission()} node of the command <br>
      * Default minecraft color codes can be used through the use of the '&amp;' char. <br>
      * Default: %prefix% &amp;7/%label% %name% %args% - %desc% [%perm%]
      *
@@ -173,11 +181,38 @@ public class CommandHandler implements TabExecutor {
      * You can use the {@code %prefix%} placeholder to insert the prefix for this {@code CommandHandler}.
      * Use {@code \n} to indicate multiple lines in your header. <br>
      * Default: %prefix% &amp;e[s] &amp;7= Alphanumeric\n%prefix% &amp;e[b] &amp;7= True | False\n%prefix% &amp;e[i] &amp;7= Number
+     *
      * @param header the header to be displayed in the help menu
      * @return this {@code CommandHandler}
      */
     public @NotNull CommandHandler withCommandHelpHeader(@Nullable String header) {
         this.COMMAND_HELP_HEADER = header;
+        return this;
+    }
+
+    /**
+     * If set to {@code true}, the help menu (page 1) will be displayed when an invalid subcommand is entered.
+     * <p>
+     * Default: false
+     *
+     * @param printHelp whether or not to print the help menu
+     * @return this {@code CommandHandler}
+     */
+    public CommandHandler setPrintHelpWhenNotACommand(boolean printHelp) {
+        this.PRINT_HELP_WHEN_NOT_A_COMMAND = printHelp;
+        return this;
+    }
+
+    /**
+     * The amount of subcommands to place on one page of the help menu.
+     * <p>
+     * Default: 5
+     *
+     * @param amount the amount of commands per page
+     * @return this {@code CommandHandler}
+     */
+    public CommandHandler withCommandsPerPage(int amount) {
+        this.CMDS_PER_PAGE = amount;
         return this;
     }
 
@@ -194,7 +229,7 @@ public class CommandHandler implements TabExecutor {
 
     /**
      * Handle commands dispatched by players.
-     *
+     * <p>
      * If there are no arguments, the help menu or the plugin description will be printed.
      * {@link CommandHandler#withPluginDescription(String)}
      *
@@ -205,11 +240,21 @@ public class CommandHandler implements TabExecutor {
     private void internalCommandDispatch(@NotNull Player player, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) {
             if (PLUGIN_DESCRIPTION == null) {
-                printHelp(player, label);
+                printHelp(player, label, 1);
             } else {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', PLUGIN_DESCRIPTION));
             }
             return;
+        }
+        if (args[0].equalsIgnoreCase("help")) {
+            int pageNr = 1;
+            if (args.length == 2) {
+                try {
+                    pageNr = Integer.parseInt(args[1]);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            printHelp(player, label, pageNr);
         }
 
         @Nullable AbstractCommand cmd = commands
@@ -219,7 +264,7 @@ public class CommandHandler implements TabExecutor {
                 .orElse(null);
         if (cmd == null) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + NOT_A_COMMAND));
-            printHelp(player, label);
+            if (PRINT_HELP_WHEN_NOT_A_COMMAND) printHelp(player, label, 1);
             return;
         }
 
@@ -235,18 +280,22 @@ public class CommandHandler implements TabExecutor {
 
     /**
      * Send the help menu to the {@link Player}.
+     *
      * @param player the player to show the help menu to
-     * @param label the command label the player used
+     * @param label  the command label the player used
+     * @param page   the page to display
      */
-    private void printHelp(Player player, String label) {
+    private void printHelp(Player player, String label, int page) {
         if (COMMAND_HELP_HEADER != null) {
             for (String s : COMMAND_HELP_HEADER.split("\n")) {
-                s = s.replace("%prefix%", prefix);
+                s = s.replace("%prefix%", prefix)
+                        .replace("%page%", String.valueOf(page));
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
             }
         }
 
-        for (AbstractCommand acmd : commands) {
+        for (int index = (page - 1) * CMDS_PER_PAGE; index < commands.size(); index++) {
+            AbstractCommand acmd = commands.get(index);
             CommandInfo info = acmd.getClass().getAnnotation(CommandInfo.class);
             String help = COMMAND_HELP_PATTERN.replace("%prefix%", prefix)
                     .replace("%label%", label)
@@ -257,6 +306,7 @@ public class CommandHandler implements TabExecutor {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', help));
         }
     }
+
 
     @Nullable
     @Override
