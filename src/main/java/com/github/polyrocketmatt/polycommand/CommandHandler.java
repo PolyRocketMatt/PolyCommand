@@ -152,9 +152,11 @@ public class CommandHandler implements TabExecutor {
      * Default minecraft color codes can be used through the use of the '&amp;' char. <br>
      *
      * @param description the message to display
+     * @return this {@code CommandHandler}
      */
-    public void withPluginDescription(String description) {
+    public @NotNull CommandHandler withPluginDescription(String description) {
         this.PLUGIN_DESCRIPTION = description;
+        return this;
     }
 
     /**
@@ -219,9 +221,10 @@ public class CommandHandler implements TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(prefix + ChatColor.translateAlternateColorCodes('&', prefix + PLAYER_ONLY));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + PLAYER_ONLY));
             return true;
         }
+
         Player player = (Player) sender;
         internalCommandDispatch(player, label, args);
         return true;
