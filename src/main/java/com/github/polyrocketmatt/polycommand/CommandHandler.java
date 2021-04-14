@@ -258,6 +258,8 @@ public class CommandHandler implements TabExecutor {
                 }
             }
             printHelp(player, label, pageNr);
+
+            return;
         }
 
         @Nullable AbstractCommand cmd = commands
@@ -297,7 +299,7 @@ public class CommandHandler implements TabExecutor {
             }
         }
 
-        for (int index = (page - 1) * CMDS_PER_PAGE; index < commands.size(); index++) {
+        for (int index = (page - 1) * CMDS_PER_PAGE; index < Math.min((page) * CMDS_PER_PAGE, commands.size()); index++) {
             AbstractCommand acmd = commands.get(index);
             CommandInfo info = acmd.getClass().getAnnotation(CommandInfo.class);
             String help = COMMAND_HELP_PATTERN.replace("%prefix%", prefix)
