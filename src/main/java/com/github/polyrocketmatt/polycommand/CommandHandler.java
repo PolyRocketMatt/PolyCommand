@@ -4,11 +4,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -20,7 +22,7 @@ import java.util.*;
  * Adapted by Mmaarten on 11/04/2021.
  */
 
-public class CommandHandler implements CommandExecutor {
+public class CommandHandler implements TabExecutor {
 
     private final @NotNull String prefix;
 
@@ -254,5 +256,28 @@ public class CommandHandler implements CommandExecutor {
                     .replace("%perm%", info.permission());
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', help));
         }
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (args.length == 0) {
+            return commands.stream().map(command1 -> command1.getClass().getAnnotation(CommandInfo.class).name()).collect(Collectors.toList());
+        }
+        @Nullable AbstractCommand cmd = commands
+                .stream()
+                .filter(filterCmd -> filterCmd.getClass().getAnnotation(CommandInfo.class).name().equalsIgnoreCase(args[0]))
+                .findAny()
+                .orElse(null);
+        if (cmd == null) {
+            return null;
+        }
+        CommandInfo info = cmd.getClass().getAnnotation(CommandInfo.class);
+        if (!commandSender.hasPermission(info.permission())) {
+            return null;
+        }
+        List<String> arguments = new ArrayList<>(Arrays.asList(args));
+        arguments.remove(0);
+        return cmd.onTabComplete(commandSender, label, arguments.toArray(new String[0]));
     }
 }
